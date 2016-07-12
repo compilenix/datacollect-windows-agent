@@ -1,11 +1,13 @@
-ssl/
-!ssl/*.sh
-!ssl/*.bat
-!ssl/*.ps1
-!ssl/*.cmd
+*.pem
+*.crt
+*.key
+*.csr
+crlnumber
+index.txt*
+serial*
 
-[Ii]nput/
-![Ii]nput/[Mm]odules/
+
+Collector Agent/[Ii]nput/*.txt
 
 
 ## Ignore Visual Studio temporary files, build results, and

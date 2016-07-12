@@ -1,0 +1,145 @@
+[ ca ]
+default_ca  = CA_default        # The default ca section
+
+[ CA_default ]
+
+dir             = .         # Where everything is kept
+certs           = $dir/certs                                # Where the issued certs are kept
+crl_dir         = $dir/crl                                  # Where the issued crl are kept
+database        = $dir/index.txt                            # database index file.
+unique_subject  = no
+new_certs_dir   = $dir/newcerts                             # default place for new certs.
+certificate     = $dir/subca_0.crt                          # The CA certificate
+serial          = $dir/serial                               # The current serial number
+crlnumber       = $dir/crlnumber                            # the current crl number
+crl             = $dir/crl.pem                              # The current CRL
+private_key     = $dir/subca_0.pem                          # The private key
+x509_extensions = usr_cert                                  # The extentions to add to the cert
+
+name_opt    = ca_default        # Subject Name options
+cert_opt    = ca_default        # Certificate field options
+
+crl_extensions      = crl_ext
+default_days        = 18250         # how long to certify for
+default_crl_days    = 30            # how long before next CRL
+default_md          = sha256        # use public key default MD
+preserve            = no            # keep passed DN ordering
+
+policy      = policy_match
+
+[ policy_match ]
+countryName             = optional
+stateOrProvinceName     = optional
+organizationName        = optional
+organizationalUnitName  = optional
+commonName              = supplied
+emailAddress            = optional
+
+[ policy_anything ]
+countryName             = optional
+stateOrProvinceName     = optional
+localityName            = optional
+organizationName        = optional
+organizationalUnitName  = optional
+commonName              = supplied
+emailAddress            = optional
+
+[ req ]
+default_bits        = 4096
+distinguished_name  = req_distinguished_name
+x509_extensions     = v3_ca # The extentions to add to the self signed cert
+string_mask         = utf8only
+req_extensions      = v3_req # The extensions to add to a certificate request
+
+[ req_distinguished_name ]
+commonName          = Common Name (e.g. server FQDN or YOUR name)
+commonName_max      = 64
+commonName_default  = 
+
+[ v3_req ]
+
+# Extensions to add to a certificate request
+
+basicConstraints = CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+
+[ usr_cert ]
+# These extensions are added when 'ca' signs a request.
+
+basicConstraints=CA:FALSE
+
+# Here are some examples of the usage of nsCertType. If it is omitted
+# the certificate can be used for anything *except* object signing.
+
+# This is OK for an SSL server.
+# nsCertType = server
+
+# For an object signing certificate this would be used.
+# nsCertType = objsign
+
+# For normal client use this is typical
+# nsCertType = client, email
+
+# and for everything including object signing:
+# nsCertType = client, email, objsign
+
+# This is typical in keyUsage for a client certificate.
+# keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+
+# This will be displayed in Netscape's comment listbox.
+nsComment = ""
+
+# PKIX recommendations harmless if included in all certificates.
+subjectKeyIdentifier=hash
+authorityKeyIdentifier=keyid,issuer
+
+[ v3_ca ]
+# Extensions for a typical CA
+
+subjectKeyIdentifier=hash
+
+authorityKeyIdentifier=keyid:always,issuer
+basicConstraints = CA:true
+
+# Key usage: this is typical for a CA certificate. However since it will
+# prevent it being used as an test self-signed certificate it is best
+# left out by default.
+# keyUsage = cRLSign, keyCertSign
+
+# Some might want this also
+# nsCertType = sslCA, emailCA
+
+keyUsage = cRLSign, keyCertSign
+
+[ crl_ext ]
+
+# CRL extensions.
+# Only issuerAltName and authorityKeyIdentifier make any sense in a CRL.
+
+# issuerAltName=issuer:copy
+authorityKeyIdentifier=keyid:always
+
+[ tsa ]
+
+default_tsa = tsa_config1   # the default TSA section
+
+[ tsa_config1 ]
+
+# These are used by the TSA reply generation only.
+dir             = ./CA                          # TSA root directory
+serial          = $dir/tsaserial                # The current serial number (mandatory)
+crypto_device   = builtin                       # OpenSSL engine to use for signing
+signer_cert     = $dir/tsacert.pem              # The TSA signing certificate (optional)
+certs           = $dir/cacert.pem               # Certificate chain to include in reply (optional)
+signer_key      = $dir/tsakey.pem               # The TSA private key (optional)
+default_policy  = tsa_policy1                   # Policy if request did not specify it (optional)
+other_policies  = tsa_policy2, tsa_policy3      # acceptable policies (optional)
+digests         = sha512, sha384, sha256        # Acceptable message digests (mandatory)
+
+ordering        = yes   # Is ordering defined for timestamps? (optional, default: no)
+tsa_name        = yes   # Must the TSA name be included in the reply? # (optional, default: no)
+
+ess_cert_id_chain       = no    # Must the ESS cert id chain be included? (optional, default: no)
+clock_precision_digits  = 0     # number of digits after dot. (optional)
+
+accuracy                = secs:1, millisecs:500, microsecs:100  # (optional)
